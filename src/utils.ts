@@ -9,14 +9,21 @@ import type {
 } from './types'
 import { INSTAWP_API_BASE } from './constants'
 
-export const getMagicLink = (hash: string) => {
+export const getMagicLink = (hash: string): string => {
   const url = new URL('https://app.instawp.io/wordpress-auto-login')
   url.searchParams.set('site', hash)
 
   return url.toString()
 }
 
-export const getWorkflowInput = () => {
+export const getWorkflowInput = (): {
+  GITHUB_TOKEN: string
+  INSTAWP_TOKEN: string
+  INSTAWP_ACTION: InstaWPAction
+  INSTAWP_TEMPLATE_SLUG: string
+  ARTIFACT_URL: string | null
+  REPO_ID: string
+} => {
   const GITHUB_TOKEN = getInput('github-token')
   const REPO_ID = getInput('repo-id')
   const INSTAWP_TOKEN = getInput('instawp-token')
@@ -38,7 +45,12 @@ export const getWorkflowInput = () => {
   }
 }
 
-export const commonHeaders = (token: string) => ({
+export const commonHeaders = (
+  token: string
+): {
+  authorization: string
+  'content-type': string
+} => ({
   authorization: `Bearer ${token}`,
   'content-type': 'application/json'
 })
