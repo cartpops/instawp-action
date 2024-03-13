@@ -1,0 +1,69 @@
+import { getInput } from '@actions/core'
+import type {
+  ApiOptions,
+  CreateSiteTemplateGitInput,
+  CreateSiteTemplateGitResponse,
+  InstaWPAction,
+  Maybe,
+  TaskStatusResponse
+} from './types'
+import { INSTAWP_API_BASE } from './constants'
+
+export const getMagicLink = (hash: string) => {
+  const url = new URL('https://app.instawp.io/wordpress-auto-login')
+  url.searchParams.set('site', hash)
+
+  return url.toString()
+}
+
+export const getWorkflowInput = () => {
+  const GITHUB_TOKEN = getInput('github-token')
+  const REPO_ID = getInput('repo-id')
+  const INSTAWP_TOKEN = getInput('instawp-token')
+  const INSTAWP_ACTION = getInput('instawp-action') as InstaWPAction
+  const INSTAWP_TEMPLATE_SLUG = getInput('instawp-template-slug')
+
+  const ARTIFACT_URL =
+    (getInput('instawp-artifact-zip-url', {
+      required: false
+    }) as Maybe<string>) ?? null
+
+  return {
+    GITHUB_TOKEN,
+    INSTAWP_TOKEN,
+    INSTAWP_ACTION,
+    INSTAWP_TEMPLATE_SLUG,
+    ARTIFACT_URL,
+    REPO_ID
+  }
+}
+
+export const commonHeaders = (token: string) => ({
+  authorization: `Bearer ${token}`,
+  'content-type': 'application/json'
+})
+
+export async function createSiteGit(
+  config: CreateSiteTemplateGitInput,
+  { token }: ApiOptions
+): Promise<CreateSiteTemplateGitResponse> {
+  const response = await fetch(`${INSTAWP_API_BASE}/sites/git`, {
+    method: 'POST',
+    headers: commonHeaders(token),
+    body: JSON.stringify(config)
+  })
+
+  return response.json()
+}
+
+export async function getTaskStatus(
+  taskId: string,
+  { token }: ApiOptions
+): Promise<TaskStatusResponse> {
+  const response = await fetch(`${INSTAWP_API_BASE}/tasks/${taskId}/status`, {
+    method: 'GET',
+    headers: commonHeaders(token)
+  })
+
+  return response.json()
+}

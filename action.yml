@@ -1,0 +1,37 @@
+name: 'InstaWP'
+description: 'This action makes it easy to interact with the InstaWP API.'
+author: 'Chris Jayden'
+
+branding:
+  icon: 'rocket'
+  color: 'red'
+
+inputs:
+  instawp-token
+    description: 'InstaWP API token'
+    required: true
+  instawp-action
+    description: 'InstaWP action'
+    required: true
+  instawp-template-slug
+    description: 'InstaWP template slug'
+    required: true
+  github-token:
+    description: 'GitHub token'
+    required: true
+  instawp-artifact-zip-url:
+    description: 'Url to the zip file'
+    required: false
+  repo-id:
+    description: 'GitHub repository ID'
+    required: true
+
+outputs:
+  instawp_url:
+    description: 'InstaWP WordPress URL'
+  instawp_magic_login_url:
+    description: 'InstaWP Magic Login URL'
+
+runs:
+  using: node20
+  main: dist/index.js
