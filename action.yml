@@ -7,22 +7,22 @@ branding:
   color: 'red'
 
 inputs:
-  instawp-token
+  'instawp-token':
     description: 'InstaWP API token'
     required: true
-  instawp-action
+  'instawp-action':
     description: 'InstaWP action'
     required: true
-  instawp-template-slug
+  'instawp-template-slug':
     description: 'InstaWP template slug'
     required: true
-  github-token:
+  'github-token':
     description: 'GitHub token'
     required: true
-  instawp-artifact-zip-url:
+  'instawp-artifact-zip-url':
     description: 'Url to the zip file'
     required: false
-  repo-id:
+  'repo-id':
     description: 'GitHub repository ID'
     required: true
 
@@ -33,5 +33,5 @@ outputs:
     description: 'InstaWP Magic Login URL'
 
 runs:
-  using: node20
-  main: dist/index.js
+  using: 'node20'
+  main: 'dist/index.js'
