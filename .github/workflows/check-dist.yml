@@ -44,7 +44,7 @@ jobs:
 
       - name: Install Dependencies
         id: install
-        run: pnpm --frozen-lockfile
+        run: pnpm install --frozen-lockfile
 
       - name: Build dist/ Directory
         id: build
