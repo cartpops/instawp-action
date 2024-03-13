@@ -37,13 +37,18 @@ jobs:
           node-version-file: .node-version
           cache: npm
 
+      - name: Install pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 8
+
       - name: Install Dependencies
         id: install
         run: pnpm --frozen-lockfile
 
       - name: Build dist/ Directory
         id: build
-        run: pnpm run build
+        run: pnpm run bundle
 
       # This will fail the workflow if the PR wasn't created by Dependabot.
       - name: Compare Directories
