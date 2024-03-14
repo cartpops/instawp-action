@@ -29016,13 +29016,10 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.run = void 0;
 const core = __importStar(__nccwpck_require__(9093));
-const github_1 = __importDefault(__nccwpck_require__(5942));
+const github_1 = __nccwpck_require__(5942);
 const constants_1 = __nccwpck_require__(8926);
 const utils_1 = __nccwpck_require__(442);
 /**
@@ -29035,14 +29032,14 @@ async function run() {
         if (!constants_1.INSTAWP_ACTIONS.includes(INSTAWP_ACTION)) {
             core.setFailed(`Invalid action: ${INSTAWP_ACTION}. Must be one of: ${constants_1.INSTAWP_ACTIONS.join(', ')}`);
         }
-        const octokit = github_1.default.getOctokit(GITHUB_TOKEN);
-        const pullRequestsNo = github_1.default.context.payload.pull_request?.number ?? 0;
-        const repo = github_1.default.context.repo;
+        const octokit = (0, github_1.getOctokit)(GITHUB_TOKEN);
+        const pullRequestsNo = github_1.context.payload.pull_request?.number ?? 0;
+        const repo = github_1.context.repo;
         if (INSTAWP_ACTION === 'create-site-template-git') {
             core.info(`Creating site template with slug: ${INSTAWP_TEMPLATE_SLUG}`);
             const config = {
                 template_slug: INSTAWP_TEMPLATE_SLUG,
-                site_name: github_1.default.context.repo.repo,
+                site_name: github_1.context.repo.repo,
                 pr_num: pullRequestsNo,
                 repo_id: REPO_ID,
                 override_url: ARTIFACT_URL ?? undefined
