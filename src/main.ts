@@ -1,5 +1,5 @@
 import * as core from '@actions/core'
-import github from '@actions/github'
+import { getOctokit, context } from '@actions/github'
 import { INSTAWP_ACTIONS } from './constants'
 import type { CreateSiteTemplateGitInput } from './types'
 import {
@@ -30,16 +30,16 @@ export async function run(): Promise<void> {
       )
     }
 
-    const octokit = github.getOctokit(GITHUB_TOKEN)
-    const pullRequestsNo = github.context.payload.pull_request?.number ?? 0
-    const repo = github.context.repo
+    const octokit = getOctokit(GITHUB_TOKEN)
+    const pullRequestsNo = context.payload.pull_request?.number ?? 0
+    const repo = context.repo
 
     if (INSTAWP_ACTION === 'create-site-template-git') {
       core.info(`Creating site template with slug: ${INSTAWP_TEMPLATE_SLUG}`)
 
       const config = {
         template_slug: INSTAWP_TEMPLATE_SLUG,
-        site_name: github.context.repo.repo,
+        site_name: context.repo.repo,
         pr_num: pullRequestsNo,
         repo_id: REPO_ID,
         override_url: ARTIFACT_URL ?? undefined
