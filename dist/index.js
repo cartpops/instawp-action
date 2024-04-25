@@ -29052,11 +29052,13 @@ async function run() {
             };
             core.info(`Creating site template with config: ${JSON.stringify(config)}`);
             const response = await (0, utils_1.createSiteGit)(config, { token: INSTAWP_TOKEN });
+            const taskId = response?.data?.task_id;
+            const wpURL = response?.data?.wp_url;
             if (!response?.data) {
                 core.setFailed(`Failed to create site template: ${response?.message ?? 'No data returned from InstaWP API'}`);
                 return;
             }
-            if (!response.data.wp_url) {
+            if (!wpURL) {
                 core.setFailed(`Failed to create site template (wp_url is not defined): ${response.data.message ?? 'No data returned from InstaWP API'}`);
                 return;
             }
@@ -29064,8 +29066,6 @@ async function run() {
                 core.setFailed(`Failed to create site template (s_hash is not defined): ${response.data.message ?? 'No data returned from InstaWP API'}`);
                 return;
             }
-            core.info(`Site template created at: ${response.data.wp_url}`);
-            const taskId = response.data.task_id;
             try {
                 await new Promise((resolve, reject) => {
                     const timeout = setTimeout(() => {
@@ -29080,7 +29080,7 @@ async function run() {
                             status = taskStatus.data.status;
                             if (status !== 'progress') {
                                 clearTimeout(timeout);
-                                core.info(`Site created at: ${wpUrl}`);
+                                core.info(`Site created at: ${wpURL}`);
                                 resolve();
                                 break;
                             }
@@ -29094,15 +29094,14 @@ async function run() {
                 core.setFailed(message);
                 return;
             }
-            const wpUrl = response.data.wp_url;
             const wpMagicLoginLink = (0, utils_1.getMagicLink)(response.data.s_hash);
-            core.setOutput('instawp_url', wpUrl);
+            core.setOutput('instawp_url', wpURL);
             core.setOutput('instawp_magic_login_url', wpMagicLoginLink);
             await updateOrCreateComment({
                 octokit,
                 repo,
                 pullRequestsNo,
-                wpUrl,
+                wpURL,
                 wpMagicLoginLink
             });
         }
@@ -29116,7 +29115,7 @@ async function run() {
     }
 }
 exports.run = run;
-async function updateOrCreateComment({ octokit, repo, pullRequestsNo, wpUrl, wpMagicLoginLink }) {
+async function updateOrCreateComment({ octokit, repo, pullRequestsNo, wpURL, wpMagicLoginLink }) {
     if (pullRequestsNo > 0) {
         const comments = await octokit.rest.issues.listComments({
             ...repo,
@@ -29124,7 +29123,7 @@ async function updateOrCreateComment({ octokit, repo, pullRequestsNo, wpUrl, wpM
             per_page: 100
         });
         const comment = comments.data.find(c => c?.body?.includes('<!-- INSTAWP-COMMENT -->'));
-        const body = `<!-- INSTAWP-COMMENT -->\nWordPress Instance Deployed.\n\nURL: [${wpUrl}](${wpUrl})\nMagic Login: [${wpMagicLoginLink}](${wpMagicLoginLink})`;
+        const body = `<!-- INSTAWP-COMMENT -->\nWordPress Instance Deployed.\n\nURL: [${wpURL}](${wpURL})\nMagic Login: [${wpMagicLoginLink}](${wpMagicLoginLink})`;
         if (undefined === comment) {
             await octokit.rest.issues.createComment({
                 ...repo,

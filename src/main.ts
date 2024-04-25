@@ -57,7 +57,6 @@ export async function run(): Promise<void> {
       core.info(`Creating site template with config: ${JSON.stringify(config)}`)
 
       const response = await createSiteGit(config, { token: INSTAWP_TOKEN })
-
       const taskId = response?.data?.task_id
       const wpURL = response?.data?.wp_url
 
@@ -126,7 +125,7 @@ export async function run(): Promise<void> {
         octokit,
         repo,
         pullRequestsNo,
-        wpUrl,
+        wpURL,
         wpMagicLoginLink
       })
     } else {
@@ -141,13 +140,13 @@ async function updateOrCreateComment({
   octokit,
   repo,
   pullRequestsNo,
-  wpUrl,
+  wpURL,
   wpMagicLoginLink
 }: {
   octokit: ReturnType<typeof getOctokit>
   repo: { owner: string; repo: string }
   pullRequestsNo: number
-  wpUrl: string
+  wpURL: string
   wpMagicLoginLink: string
 }) {
   if (pullRequestsNo > 0) {
@@ -159,7 +158,7 @@ async function updateOrCreateComment({
     const comment = comments.data.find(c =>
       c?.body?.includes('<!-- INSTAWP-COMMENT -->')
     )
-    const body = `<!-- INSTAWP-COMMENT -->\nWordPress Instance Deployed.\n\nURL: [${wpUrl}](${wpUrl})\nMagic Login: [${wpMagicLoginLink}](${wpMagicLoginLink})`
+    const body = `<!-- INSTAWP-COMMENT -->\nWordPress Instance Deployed.\n\nURL: [${wpURL}](${wpURL})\nMagic Login: [${wpMagicLoginLink}](${wpMagicLoginLink})`
     if (undefined === comment) {
       await octokit.rest.issues.createComment({
         ...repo,
