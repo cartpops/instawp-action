@@ -93,7 +93,10 @@ export async function run(): Promise<void> {
           timeout
         ])
       } catch (error) {
-        core.setFailed(error.message)
+        const message =
+          error instanceof Error ? error.message : 'Task timeout reached'
+
+        core.setFailed(message)
         return
       }
 
