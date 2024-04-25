@@ -29066,9 +29066,11 @@ async function run() {
             }
             core.info(`Site template created at: ${response.data.wp_url}`);
             const taskId = response.data.task_id;
-            const timeout = new Promise((_, reject) => setTimeout(() => reject(new Error('Task timeout reached, InstaWP API did not respond')), TIMEOUT_SECONDS * 1000));
             try {
-                await Promise.race([
+                await new Promise((resolve, reject) => {
+                    const timeout = setTimeout(() => {
+                        reject(new Error('Task timeout reached, InstaWP API did not respond in time'));
+                    }, TIMEOUT_SECONDS * 1000);
                     (async function checkStatus() {
                         let status = 'progress';
                         while (status === 'progress') {
@@ -29077,15 +29079,15 @@ async function run() {
                             });
                             status = taskStatus.data.status;
                             if (status !== 'progress') {
-                                core.info(`Site created at: ${response.data.wp_url}`);
+                                clearTimeout(timeout);
+                                core.info(`Site created at: ${wpUrl}`);
+                                resolve();
                                 break;
                             }
-                            core.info('Waiting for site creation...');
-                            await new Promise(resolve => setTimeout(resolve, 2000));
+                            await new Promise(r => setTimeout(r, 2000));
                         }
-                    })(),
-                    timeout
-                ]);
+                    })();
+                });
             }
             catch (error) {
                 const message = error instanceof Error ? error.message : 'Task timeout reached';
