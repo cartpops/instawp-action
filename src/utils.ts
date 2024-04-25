@@ -48,14 +48,10 @@ export const getWorkflowInput = (): {
   }
 }
 
-export const commonHeaders = (
-  token: string
-): {
-  authorization: string
-  'content-type': string
-} => ({
-  authorization: `Bearer ${token}`,
-  'content-type': 'application/json'
+export const commonHeaders = (token: string) => ({
+  Authorization: `Bearer ${token}`,
+  Accept: 'application/json',
+  'Content-Type': 'application/json'
 })
 
 export async function createSiteGit(
@@ -65,11 +61,12 @@ export async function createSiteGit(
   const response = await fetch(`${INSTAWP_API_BASE}/sites/git`, {
     method: 'POST',
     headers: commonHeaders(token),
-    body: JSON.stringify(config)
+    body: JSON.stringify(config),
+    redirect: 'follow'
   })
 
   const responseText = await response.text() // Get the response body as text
-  console.log('Debug Response Body:', responseText) // Log the body for debugging
+  console.log('[createSiteGit] Debug Response Body:', responseText) // Log the body for debugging
 
   if (!response.ok) {
     throw new Error(
@@ -94,10 +91,11 @@ export async function getTaskStatus(
 ): Promise<TaskStatusResponse> {
   const response = await fetch(`${INSTAWP_API_BASE}/tasks/${taskId}/status`, {
     method: 'GET',
-    headers: commonHeaders(token)
+    headers: commonHeaders(token),
+    redirect: 'follow'
   })
   const responseText = await response.text() // Get the response body as text
-  console.log('Debug Response Body:', responseText) // Log the body for debugging
+  console.log('[getTaskStatus] Debug Response Body:', responseText) // Log the body for debugging
 
   if (!response.ok) {
     throw new Error(

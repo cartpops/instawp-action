@@ -29179,18 +29179,20 @@ const getWorkflowInput = () => {
 };
 exports.getWorkflowInput = getWorkflowInput;
 const commonHeaders = (token) => ({
-    authorization: `Bearer ${token}`,
-    'content-type': 'application/json'
+    Authorization: `Bearer ${token}`,
+    Accept: 'application/json',
+    'Content-Type': 'application/json'
 });
 exports.commonHeaders = commonHeaders;
 async function createSiteGit(config, { token }) {
     const response = await fetch(`${constants_1.INSTAWP_API_BASE}/sites/git`, {
         method: 'POST',
         headers: (0, exports.commonHeaders)(token),
-        body: JSON.stringify(config)
+        body: JSON.stringify(config),
+        redirect: 'follow'
     });
     const responseText = await response.text(); // Get the response body as text
-    console.log('Debug Response Body:', responseText); // Log the body for debugging
+    console.log('[createSiteGit] Debug Response Body:', responseText); // Log the body for debugging
     if (!response.ok) {
         throw new Error(`[createSiteGit] Failed to create site template: HTTP ${response.status} ${response.statusText}`);
     }
@@ -29206,10 +29208,11 @@ exports.createSiteGit = createSiteGit;
 async function getTaskStatus(taskId, { token }) {
     const response = await fetch(`${constants_1.INSTAWP_API_BASE}/tasks/${taskId}/status`, {
         method: 'GET',
-        headers: (0, exports.commonHeaders)(token)
+        headers: (0, exports.commonHeaders)(token),
+        redirect: 'follow'
     });
     const responseText = await response.text(); // Get the response body as text
-    console.log('Debug Response Body:', responseText); // Log the body for debugging
+    console.log('[getTaskStatus] Debug Response Body:', responseText); // Log the body for debugging
     if (!response.ok) {
         throw new Error(`[getTaskStatus] Failed to create site template: HTTP ${response.status} ${response.statusText}`);
     }
