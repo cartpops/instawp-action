@@ -58,6 +58,9 @@ export async function run(): Promise<void> {
 
       const response = await createSiteGit(config, { token: INSTAWP_TOKEN })
 
+      const taskId = response?.data?.task_id
+      const wpURL = response?.data?.wp_url
+
       if (!response?.data) {
         core.setFailed(
           `Failed to create site template: ${response?.message ?? 'No data returned from InstaWP API'}`
@@ -65,7 +68,7 @@ export async function run(): Promise<void> {
         return
       }
 
-      if (!response.data.wp_url) {
+      if (!wpURL) {
         core.setFailed(
           `Failed to create site template (wp_url is not defined): ${response.data.message ?? 'No data returned from InstaWP API'}`
         )
@@ -78,9 +81,6 @@ export async function run(): Promise<void> {
         )
         return
       }
-
-      core.info(`Site template created at: ${response.data.wp_url}`)
-      const taskId = response.data.task_id
 
       try {
         await new Promise<void>((resolve, reject) => {
@@ -101,7 +101,7 @@ export async function run(): Promise<void> {
               status = taskStatus.data.status
               if (status !== 'progress') {
                 clearTimeout(timeout)
-                core.info(`Site created at: ${wpUrl}`)
+                core.info(`Site created at: ${wpURL}`)
                 resolve()
                 break
               }
@@ -117,10 +117,9 @@ export async function run(): Promise<void> {
         return
       }
 
-      const wpUrl = response.data.wp_url
       const wpMagicLoginLink = getMagicLink(response.data.s_hash)
 
-      core.setOutput('instawp_url', wpUrl)
+      core.setOutput('instawp_url', wpURL)
       core.setOutput('instawp_magic_login_url', wpMagicLoginLink)
 
       await updateOrCreateComment({
