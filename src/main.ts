@@ -45,7 +45,7 @@ export async function run(): Promise<void> {
 
       const config = {
         template_slug: INSTAWP_TEMPLATE_SLUG,
-        site_name: `${repo.owner}-${repo.repo}-pr-${pullRequestsNo}`,
+        site_name: `${repo.owner}-${repo.repo}-pr-${pullRequestsNo}-${Date.now()}`,
         pr_num: pullRequestsNo,
         repo_id: REPO_ID,
         override_url: ARTIFACT_URL ?? undefined
