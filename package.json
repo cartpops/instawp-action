@@ -30,6 +30,7 @@
     "build": "pnpm run format:write && pnpm run package",
     "ci-test": "pnpm jest",
     "coverage": "pnpm make-coverage-badge --output-path ./badges/coverage.svg",
+    "release": "bash ./script/release",
     "format:write": "pnpm prettier --write .",
     "format:check": "pnpm prettier --check .",
     "lint": "pnpm eslint . -c ./.github/linters/.eslintrc.yml",
