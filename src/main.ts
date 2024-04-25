@@ -51,11 +51,27 @@ export async function run(): Promise<void> {
         override_url: ARTIFACT_URL ?? undefined
       } satisfies CreateSiteTemplateGitInput
 
+      core.info(`Creating site template with config: ${JSON.stringify(config)}`)
+
       const response = await createSiteGit(config, { token: INSTAWP_TOKEN })
 
       if (!response?.data) {
         core.setFailed(
           `Failed to create site template: ${response?.message ?? 'No data returned from InstaWP API'}`
+        )
+        return
+      }
+
+      if (!response.data.wp_url) {
+        core.setFailed(
+          `Failed to create site template (wp_url is not defined): ${response.data.message ?? 'No data returned from InstaWP API'}`
+        )
+        return
+      }
+
+      if (!response.data.s_hash) {
+        core.setFailed(
+          `Failed to create site template (s_hash is not defined): ${response.data.message ?? 'No data returned from InstaWP API'}`
         )
         return
       }
