@@ -28,6 +28,9 @@ inputs:
   'timeout-seconds':
     description: 'Timeout in seconds'
     required: false
+  'update-comment':
+    description: 'Whether or not to update any comments or to create a new one'
+    required: false
 
 outputs:
   instawp_url:

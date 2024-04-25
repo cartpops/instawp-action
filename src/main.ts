@@ -22,7 +22,8 @@ export async function run(): Promise<void> {
       INSTAWP_TEMPLATE_SLUG,
       REPO_ID,
       ARTIFACT_URL,
-      TIMEOUT_SECONDS
+      TIMEOUT_SECONDS,
+      UPDATE_COMMENT
     } = getWorkflowInput()
 
     if (!INSTAWP_ACTIONS.includes(INSTAWP_ACTION)) {
@@ -126,7 +127,8 @@ export async function run(): Promise<void> {
         repo,
         pullRequestsNo,
         wpURL,
-        wpMagicLoginLink
+        wpMagicLoginLink,
+        updateComment: UPDATE_COMMENT
       })
     } else {
       core.setFailed(`${INSTAWP_ACTION} has not been implemented yet.`)
@@ -141,13 +143,15 @@ async function updateOrCreateComment({
   repo,
   pullRequestsNo,
   wpURL,
-  wpMagicLoginLink
+  wpMagicLoginLink,
+  updateComment
 }: {
   octokit: ReturnType<typeof getOctokit>
   repo: { owner: string; repo: string }
   pullRequestsNo: number
   wpURL: string
   wpMagicLoginLink: string
+  updateComment: boolean
 }) {
   if (pullRequestsNo > 0) {
     const comments = await octokit.rest.issues.listComments({
@@ -159,17 +163,19 @@ async function updateOrCreateComment({
       c?.body?.includes('<!-- INSTAWP-COMMENT -->')
     )
     const body = `<!-- INSTAWP-COMMENT -->\nWordPress Instance Deployed.\n\nURL: [${wpURL}](${wpURL})\nMagic Login: [${wpMagicLoginLink}](${wpMagicLoginLink})`
-    if (undefined === comment) {
-      await octokit.rest.issues.createComment({
+
+    if (comment && updateComment) {
+      // Update existing comment if found and updateComment is true
+      await octokit.rest.issues.updateComment({
         ...repo,
-        issue_number: pullRequestsNo,
+        comment_id: comment.id,
         body
       })
     } else {
-      await octokit.rest.issues.updateComment({
+      // Create a new comment if no existing comment is found or updateComment is false
+      await octokit.rest.issues.createComment({
         ...repo,
         issue_number: pullRequestsNo,
-        comment_id: comment.id,
         body
       })
     }

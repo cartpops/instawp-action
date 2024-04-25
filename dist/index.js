@@ -29028,7 +29028,7 @@ const utils_1 = __nccwpck_require__(442);
  */
 async function run() {
     try {
-        const { GITHUB_TOKEN, INSTAWP_TOKEN, INSTAWP_ACTION, INSTAWP_TEMPLATE_SLUG, REPO_ID, ARTIFACT_URL, TIMEOUT_SECONDS } = (0, utils_1.getWorkflowInput)();
+        const { GITHUB_TOKEN, INSTAWP_TOKEN, INSTAWP_ACTION, INSTAWP_TEMPLATE_SLUG, REPO_ID, ARTIFACT_URL, TIMEOUT_SECONDS, UPDATE_COMMENT } = (0, utils_1.getWorkflowInput)();
         if (!constants_1.INSTAWP_ACTIONS.includes(INSTAWP_ACTION)) {
             core.setFailed(`Invalid action: ${INSTAWP_ACTION}. Must be one of: ${constants_1.INSTAWP_ACTIONS.join(', ')}`);
             return;
@@ -29102,7 +29102,8 @@ async function run() {
                 repo,
                 pullRequestsNo,
                 wpURL,
-                wpMagicLoginLink
+                wpMagicLoginLink,
+                updateComment: UPDATE_COMMENT
             });
         }
         else {
@@ -29115,7 +29116,7 @@ async function run() {
     }
 }
 exports.run = run;
-async function updateOrCreateComment({ octokit, repo, pullRequestsNo, wpURL, wpMagicLoginLink }) {
+async function updateOrCreateComment({ octokit, repo, pullRequestsNo, wpURL, wpMagicLoginLink, updateComment }) {
     if (pullRequestsNo > 0) {
         const comments = await octokit.rest.issues.listComments({
             ...repo,
@@ -29124,18 +29125,19 @@ async function updateOrCreateComment({ octokit, repo, pullRequestsNo, wpURL, wpM
         });
         const comment = comments.data.find(c => c?.body?.includes('<!-- INSTAWP-COMMENT -->'));
         const body = `<!-- INSTAWP-COMMENT -->\nWordPress Instance Deployed.\n\nURL: [${wpURL}](${wpURL})\nMagic Login: [${wpMagicLoginLink}](${wpMagicLoginLink})`;
-        if (undefined === comment) {
-            await octokit.rest.issues.createComment({
+        if (comment && updateComment) {
+            // Update existing comment if found and updateComment is true
+            await octokit.rest.issues.updateComment({
                 ...repo,
-                issue_number: pullRequestsNo,
+                comment_id: comment.id,
                 body
             });
         }
         else {
-            await octokit.rest.issues.updateComment({
+            // Create a new comment if no existing comment is found or updateComment is false
+            await octokit.rest.issues.createComment({
                 ...repo,
                 issue_number: pullRequestsNo,
-                comment_id: comment.id,
                 body
             });
         }
@@ -29167,6 +29169,7 @@ const getWorkflowInput = () => {
     const INSTAWP_ACTION = (0, core_1.getInput)('instawp-action');
     const INSTAWP_TEMPLATE_SLUG = (0, core_1.getInput)('instawp-template-slug');
     const TIMEOUT_SECONDS = (0, core_1.getInput)('timeout-seconds', { required: false });
+    const UPDATE_COMMENT = (0, core_1.getInput)('update-comment', { required: false }) ?? 'false';
     const ARTIFACT_URL = (0, core_1.getInput)('instawp-artifact-zip-url', {
         required: false
     }) ?? null;
@@ -29177,6 +29180,7 @@ const getWorkflowInput = () => {
         INSTAWP_TEMPLATE_SLUG,
         ARTIFACT_URL,
         REPO_ID,
+        UPDATE_COMMENT: UPDATE_COMMENT === 'true' ? true : false,
         TIMEOUT_SECONDS: TIMEOUT_SECONDS ? parseInt(TIMEOUT_SECONDS) : 120
     };
 };
