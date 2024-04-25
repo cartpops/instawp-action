@@ -23,12 +23,14 @@ export const getWorkflowInput = (): {
   INSTAWP_TEMPLATE_SLUG: string
   ARTIFACT_URL: string | null
   REPO_ID: string
+  TIMEOUT_SECONDS: number
 } => {
   const GITHUB_TOKEN = getInput('github-token')
   const REPO_ID = getInput('repo-id')
   const INSTAWP_TOKEN = getInput('instawp-token')
   const INSTAWP_ACTION = getInput('instawp-action') as InstaWPAction
   const INSTAWP_TEMPLATE_SLUG = getInput('instawp-template-slug')
+  const TIMEOUT_SECONDS = getInput('timeout-seconds', { required: false })
 
   const ARTIFACT_URL =
     (getInput('instawp-artifact-zip-url', {
@@ -41,7 +43,8 @@ export const getWorkflowInput = (): {
     INSTAWP_ACTION,
     INSTAWP_TEMPLATE_SLUG,
     ARTIFACT_URL,
-    REPO_ID
+    REPO_ID,
+    TIMEOUT_SECONDS: TIMEOUT_SECONDS ? parseInt(TIMEOUT_SECONDS) : 120
   }
 }
 
