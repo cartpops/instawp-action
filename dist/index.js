@@ -29048,9 +29048,18 @@ async function run() {
                 repo_id: REPO_ID,
                 override_url: ARTIFACT_URL ?? undefined
             };
+            core.info(`Creating site template with config: ${JSON.stringify(config)}`);
             const response = await (0, utils_1.createSiteGit)(config, { token: INSTAWP_TOKEN });
             if (!response?.data) {
                 core.setFailed(`Failed to create site template: ${response?.message ?? 'No data returned from InstaWP API'}`);
+                return;
+            }
+            if (!response.data.wp_url) {
+                core.setFailed(`Failed to create site template (wp_url is not defined): ${response.data.message ?? 'No data returned from InstaWP API'}`);
+                return;
+            }
+            if (!response.data.s_hash) {
+                core.setFailed(`Failed to create site template (s_hash is not defined): ${response.data.message ?? 'No data returned from InstaWP API'}`);
                 return;
             }
             core.info(`Site template created at: ${response.data.wp_url}`);
