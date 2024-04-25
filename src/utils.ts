@@ -68,11 +68,24 @@ export async function createSiteGit(
     body: JSON.stringify(config)
   })
 
+  const responseText = await response.text() // Get the response body as text
+  console.log('Debug Response Body:', responseText) // Log the body for debugging
+
   if (!response.ok) {
-    throw new Error(`Failed to create site template: ${response.statusText}`)
+    throw new Error(
+      `[createSiteGit] Failed to create site template: HTTP ${response.status} ${response.statusText}`
+    )
   }
 
-  return response.json()
+  try {
+    return JSON.parse(responseText) // Parse the response body as JSON
+  } catch (error) {
+    const err = error as Error
+
+    throw new Error(
+      `[createSiteGit] Error parsing JSON from response: ${err.message}`
+    )
+  }
 }
 
 export async function getTaskStatus(
@@ -83,10 +96,21 @@ export async function getTaskStatus(
     method: 'GET',
     headers: commonHeaders(token)
   })
+  const responseText = await response.text() // Get the response body as text
+  console.log('Debug Response Body:', responseText) // Log the body for debugging
 
   if (!response.ok) {
-    throw new Error(`Failed to get task status: ${response.statusText}`)
+    throw new Error(
+      `[getTaskStatus] Failed to create site template: HTTP ${response.status} ${response.statusText}`
+    )
   }
 
-  return response.json()
+  try {
+    return JSON.parse(responseText) // Parse the response body as JSON
+  } catch (error) {
+    const err = error as Error
+    throw new Error(
+      `[getTaskStatus] Error parsing JSON from response: ${err.message}`
+    )
+  }
 }
