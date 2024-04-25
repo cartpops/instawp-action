@@ -29064,7 +29064,7 @@ async function run() {
             }
             core.info(`Site template created at: ${response.data.wp_url}`);
             const taskId = response.data.task_id;
-            const timeout = new Promise((_, reject) => setTimeout(() => reject(new Error('Task timeout reached, InstaWP API did not respond')), TIMEOUT_SECONDS));
+            const timeout = new Promise((_, reject) => setTimeout(() => reject(new Error('Task timeout reached, InstaWP API did not respond')), TIMEOUT_SECONDS * 1000));
             try {
                 await Promise.race([
                     (async function checkStatus() {

@@ -85,7 +85,7 @@ export async function run(): Promise<void> {
             reject(
               new Error('Task timeout reached, InstaWP API did not respond')
             ),
-          TIMEOUT_SECONDS
+          TIMEOUT_SECONDS * 1000
         )
       )
 
