@@ -29041,9 +29041,11 @@ async function run() {
             if (ARTIFACT_URL) {
                 core.info(`Using artifact URL: ${ARTIFACT_URL}`);
             }
+            const siteName = `${repo.owner}-${repo.repo}-${github_1.context.sha}`;
+            const siteNameMaxLen = siteName.substring(0, 30);
             const config = {
                 template_slug: INSTAWP_TEMPLATE_SLUG,
-                site_name: `${repo.owner}-${repo.repo}-${github_1.context.sha}`,
+                site_name: siteNameMaxLen,
                 pr_num: pullRequestsNo,
                 repo_id: REPO_ID,
                 override_url: ARTIFACT_URL ?? undefined
