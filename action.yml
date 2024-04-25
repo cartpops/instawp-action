@@ -25,6 +25,9 @@ inputs:
   'repo-id':
     description: 'GitHub repository ID'
     required: true
+  'timeout-seconds':
+    description: 'Timeout in seconds'
+    required: false
 
 outputs:
   instawp_url:
