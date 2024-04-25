@@ -29189,6 +29189,9 @@ async function createSiteGit(config, { token }) {
         headers: (0, exports.commonHeaders)(token),
         body: JSON.stringify(config)
     });
+    if (!response.ok) {
+        throw new Error(`Failed to create site template: ${response.statusText}`);
+    }
     return response.json();
 }
 exports.createSiteGit = createSiteGit;
@@ -29197,6 +29200,9 @@ async function getTaskStatus(taskId, { token }) {
         method: 'GET',
         headers: (0, exports.commonHeaders)(token)
     });
+    if (!response.ok) {
+        throw new Error(`Failed to get task status: ${response.statusText}`);
+    }
     return response.json();
 }
 exports.getTaskStatus = getTaskStatus;

@@ -68,6 +68,10 @@ export async function createSiteGit(
     body: JSON.stringify(config)
   })
 
+  if (!response.ok) {
+    throw new Error(`Failed to create site template: ${response.statusText}`)
+  }
+
   return response.json()
 }
 
@@ -79,6 +83,10 @@ export async function getTaskStatus(
     method: 'GET',
     headers: commonHeaders(token)
   })
+
+  if (!response.ok) {
+    throw new Error(`Failed to get task status: ${response.statusText}`)
+  }
 
   return response.json()
 }
